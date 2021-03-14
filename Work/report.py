@@ -10,7 +10,7 @@ def read_portfolio(filename):
         rows = csv.reader(f)
         next(rows)
         for row in rows:
-            holding = (row[0], int(row[1]), float(row[2]))
+            holding = {'name': row[0], 'share': int(row[1]), 'price': float(row[2])}
             portfolio.append(holding)
         return portfolio
 
@@ -21,6 +21,6 @@ else:
 
 portfolio = read_portfolio(filename)
 total = 0.0
-for name, nshares, price in portfolio:
-    total += nshares * price
+for s in portfolio:
+    total += s['share'] * s['price'] 
 print(total)
