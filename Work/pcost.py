@@ -10,14 +10,14 @@ def portfolio_cost(filename):
         next(rows)
 
         total_price = 0.0
-        for row in rows:
+        for lineno, row in enumerate(rows):
             print(row)
             try:
                 shares = int(row[1])
                 price = float(row[2])
                 total_price = total_price + (shares * price)
             except ValueError:
-                print('Invalid input:', row)
+                print(f"Row {lineno}: Couldn't convert:", row)
         return total_price
     raise RuntimeError
 
