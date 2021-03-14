@@ -10,8 +10,9 @@ def read_portfolio(filename):
         rows = csv.reader(f)
         headers = next(rows)
         select = ['name', 'shares', 'price']
+        funcs = [str, int, float]
         indices = [headers.index(colname) for colname in select]
-        return [{colname: row[index] for colname, index in zip(select, indices)} for row in rows]
+        return [{colname: func(row[index]) for func, colname, index in zip(funcs, select, indices)} for row in rows]
 
 def read_prices(filename):
     with open(filename) as f:
@@ -22,8 +23,8 @@ def make_report(portfolio, prices):
     report = []
     for holding in portfolio:
         symbol = holding['name']
-        shares = int(holding['shares'])
-        buy_price = float(holding['price'])
+        shares = holding['shares']
+        buy_price = holding['price']
         current_price = prices[symbol]
         change = current_price - buy_price 
         report.append((symbol, shares, current_price, change))
@@ -45,5 +46,5 @@ for n, s, price, delta in report:
     print(f'{n: >10s} {s: >10d} {price: >10s} {delta: 10.2f}')
 
 
-total_cost = sum([float(s['price'])*int(s['shares']) for s in portfolio])
+total_cost = sum([s['price']*s['shares'] for s in portfolio])
 print('Total cost:', total_cost)
