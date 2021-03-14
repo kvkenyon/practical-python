@@ -6,36 +6,30 @@ import sys
 from pprint import pprint
 
 def read_portfolio(filename):
-    portfolio = []
     with open(filename) as f:
         rows = csv.reader(f)
-        next(rows)
-        for row in rows:
-            holding = {'name': row[0], 'share': int(row[1]), 'price': float(row[2])}
-            portfolio.append(holding)
-        return portfolio
+        headers = next(rows)
+        select = ['name', 'shares', 'price']
+        indices = [headers.index(colname) for colname in select]
+        return [{colname: row[index] for colname, index in zip(select, indices)} for row in rows]
 
 def read_prices(filename):
-    prices = {}
     with open(filename) as f:
         rows = csv.reader(f)
-        for row in rows:
-            if row:
-                prices[row[0]] = float(row[1])
-    return prices
+        return {row[0]: float(row[1]) for row in rows if row}
 
 def make_report(portfolio, prices):
     report = []
     for holding in portfolio:
         symbol = holding['name']
-        shares = holding['share']
-        buy_price = holding['price']
+        shares = int(holding['shares'])
+        buy_price = float(holding['price'])
         current_price = prices[symbol]
         change = current_price - buy_price 
         report.append((symbol, shares, current_price, change))
     return report
 
-fn_portfolio = 'Data/portfolio.csv'
+fn_portfolio = 'Data/portfoliodate.csv'
 fn_prices = 'Data/prices.csv'
 
 portfolio = read_portfolio(fn_portfolio)
@@ -49,3 +43,7 @@ print('%10s %10s %10s %10s' % tuple(sep))
 for n, s, price, delta in report:
     price = '$' + str(round(price,2))
     print(f'{n: >10s} {s: >10d} {price: >10s} {delta: 10.2f}')
+
+
+total_cost = sum([float(s['price'])*int(s['shares']) for s in portfolio])
+print('Total cost:', total_cost)
