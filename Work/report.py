@@ -24,29 +24,28 @@ def read_prices(filename):
                 prices[row[0]] = float(row[1])
     return prices
 
+def make_report(portfolio, prices):
+    report = []
+    for holding in portfolio:
+        symbol = holding['name']
+        shares = holding['share']
+        buy_price = holding['price']
+        current_price = prices[symbol]
+        change = current_price - buy_price 
+        report.append((symbol, shares, current_price, change))
+    return report
+
 fn_portfolio = 'Data/portfolio.csv'
 fn_prices = 'Data/prices.csv'
 
 portfolio = read_portfolio(fn_portfolio)
-
-total = 0.0
-for s in portfolio:
-    total += s['share'] * s['price'] 
-print(total)
-
 prices = read_prices(fn_prices)
-#pprint(prices)
+report = make_report(portfolio, prices)
 
-new_total = 0.0
-for holding in portfolio:
-    symbol = holding['name']
-    buy_price = holding['price']
-    curr_price = prices[symbol]
-    print(symbol, 'Buy price:', buy_price)
-    print(symbol, 'Current price:', curr_price)
-    print('Profit/Loss:', curr_price - buy_price)
-    print()
-    new_total += holding['share'] * float(curr_price)
-
-print('New total:', new_total)
-print('Gain/Loss:', new_total-total)
+headers = ('Name', 'Shares', 'Price', 'Change')
+print('%10s %10s %10s %10s' % headers)
+sep = ['-'*10] * len(headers)
+print('%10s %10s %10s %10s' % tuple(sep))
+for n, s, price, delta in report:
+    price = '$' + str(round(price,2))
+    print(f'{n: >10s} {s: >10d} {price: >10s} {delta: 10.2f}')
