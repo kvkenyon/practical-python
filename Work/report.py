@@ -13,7 +13,9 @@ def read_portfolio(filename):
         select = ['name', 'shares', 'price']
         funcs = [str, int, float]
         indices = [headers.index(colname) for colname in select]
-        return [{colname: func(row[index]) for func, colname, index in zip(funcs, select, indices)} for row in rows]
+        return [{colname: func(row[index]) \
+            for func, colname, index in zip(funcs, select, indices)} \
+                for row in rows]
 
 
 def read_prices(filename):
@@ -43,12 +45,16 @@ def print_report(report):
         price = '$' + str(round(price,2))
         print(f'{n: >10s} {s: >10d} {price: >10s} {delta: 10.2f}')
 
+def portfolio_report(portfolio_filename, prices_filename):
+    """
+    Creates the portfolio report
+    """
+    portfolio = read_portfolio(portfolio_filename)
+    prices = read_prices(prices_filename)
+    report = make_report(portfolio, prices)
+    print_report(report)
 
 fn_portfolio = 'Data/portfoliodate.csv'
 fn_prices = 'Data/prices.csv'
 
-portfolio = read_portfolio(fn_portfolio)
-prices = read_prices(fn_prices)
-report = make_report(portfolio, prices)
-print_report(report)
-
+portfolio_report(fn_portfolio, fn_prices)
