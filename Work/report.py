@@ -3,12 +3,14 @@
 #
 # Exercise 2.4
 from fileparse import parse_csv
+from stock import Stock
+import tableformat
 
 
 def read_portfolio(filename):
     with open(filename) as file:
-        return parse_csv(file, select=['name', 'shares', 'price'], types=[str, int, float], has_headers=True) 
-
+        portdicts = parse_csv(file, select=['name', 'shares', 'price'], types=[str, int, float], has_headers=True) 
+    return [Stock(d['name'],d['shares'],d['price']) for d in portdicts]
 
 def read_prices(filename):
     with open(filename) as file:
@@ -18,38 +20,43 @@ def read_prices(filename):
 def make_report(portfolio, prices):
     report = []
     for holding in portfolio:
-        symbol = holding['name']
-        shares = holding['shares']
-        buy_price = holding['price']
+        symbol = holding.name 
+        shares = holding.shares 
+        buy_price = holding.price 
         current_price = prices[symbol]
         change = current_price - buy_price 
         report.append((symbol, shares, current_price, change))
     return report
 
 
-def print_report(report):
+def print_report(report, formatter):
     headers = ('Name', 'Shares', 'Price', 'Change')
-    print('%10s %10s %10s %10s' % headers)
-    sep = ['-'*10] * len(headers)
-    print('%10s %10s %10s %10s' % tuple(sep))
+    formatter.headings(headers)
     for n, s, price, delta in report:
         price = '$' + str(round(price,2))
-        print(f'{n: >10s} {s: >10d} {price: >10s} {delta: 10.2f}')
+        delta = str(round(delta, 2))
+        rowdata = [n,s,price,delta]
+        formatter.row(rowdata)
 
-def portfolio_report(portfolio_filename, prices_filename):
+def portfolio_report(portfolio_filename, prices_filename, fmt='txt'):
     """
     Creates the portfolio report
     """
     portfolio = read_portfolio(portfolio_filename)
     prices = read_prices(prices_filename)
     report = make_report(portfolio, prices)
-    print_report(report)
-
+    formatter = tableformat.create_formatter(fmt)
+    print_report(report, formatter)
+      
 def main(argv):
     fn_portfolio = argv[1] 
     fn_prices = argv[2] 
+    fmt = 'txt'
+    if len(argv) > 3:
+        fmt = argv[3]
 
-    portfolio_report(fn_portfolio, fn_prices)
+
+    portfolio_report(fn_portfolio, fn_prices, fmt)
 
 if __name__ == '__main__':
     import sys
