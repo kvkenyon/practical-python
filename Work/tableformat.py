@@ -9,12 +9,16 @@ class TableFormatter:
 
 class TextTableFormatter(TableFormatter):
     def headings(self, headers):
-        print('%10s %10s %10s %10s' % headers)
-        sep = ['-'*10] * len(headers)
-        print('%10s %10s %10s %10s' % tuple(sep))
+        for h in headers:
+            print(f'{h: >10s}', end=' ')
+        print()
+        print(('-'*10 + ' ')*len(headers))
 
     def row(self, rowdata):
-        print(f'{rowdata[0]: >10s} {rowdata[1]: >10d} {rowdata[2]: >10s} {rowdata[3]: >10s}')
+        for d in rowdata:
+            print(f'{d: >10s}', end=' ')
+        print()
+
 
 class CSVTableFormatter(TableFormatter):
     def headings(self, headers):
@@ -37,12 +41,27 @@ class HTMLTableFormatter(TableFormatter):
             r += f'<td>{data}</td>'
         r += '</tr>'
         print(r)
-    
+
+class FormatError(Exception):
+    pass    
 
 def create_formatter(fmt):
     if fmt == 'txt':
         return TextTableFormatter()
     elif fmt == 'html':
         return HTMLTableFormatter()
-    else:
+    elif fmt == 'csv':
         return CSVTableFormatter()
+    else:
+        raise FormatError('Unknown table format: %s' % fmt)
+
+def print_table(objects, attrs, fmt='txt'):
+    formatter = create_formatter(fmt)
+
+    formatter.headings(attrs)
+    for obj in objects:
+        rowdata = []
+        for attr in attrs:
+            val = getattr(obj, attr)
+            rowdata.append(str(val))
+        formatter.row(rowdata)
