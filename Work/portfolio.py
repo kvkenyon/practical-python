@@ -1,9 +1,25 @@
 # portfolio.py
 
+import fileparse
+import stock
+
 class Portfolio:
 
-    def __init__(self, holdings):
-        self.__holdings = holdings
+    def __init__(self):
+        self.__holdings = [] 
+
+    @classmethod
+    def from_csv(cls, lines, **opts):
+        self = cls()
+
+        portdicts = fileparse.parse_csv(lines, 
+                                        select=['name', 'shares', 'price'],
+                                        types=[str, int, float], 
+                                        **opts)
+        for d in portdicts:
+            self.append(stock.Stock(**d))
+
+        return self
 
     def __iter__(self):
         return self.__holdings.__iter__()
@@ -16,6 +32,9 @@ class Portfolio:
 
     def __contains__(self, name):
         return any(s.name == name for s in self.__holdings)
+
+    def append(self, holding):
+        self.__holdings.append(holding)
     
     @property
     def total_cost(self):

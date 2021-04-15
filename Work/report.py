@@ -10,9 +10,7 @@ import tableformat
 
 def read_portfolio(filename, **opts):
     with open(filename) as file:
-        portdicts = parse_csv(file, select=['name', 'shares', 'price'], types=[str, int, float], has_headers=True, **opts) 
-    portfolio = [Stock(**d) for d in portdicts]
-    return Portfolio(portfolio)
+        return Portfolio.from_csv(file, **opts)
 
 def read_prices(filename):
     with open(filename) as file:
@@ -56,6 +54,12 @@ def main(argv):
     if len(argv) > 3:
         fmt = argv[3]
 
+    import logging
+    logging.basicConfig(
+        filename = 'app.log',
+        filemode = 'w',
+        level = logging.DEBUG
+    )
 
     portfolio_report(fn_portfolio, fn_prices, fmt)
 
