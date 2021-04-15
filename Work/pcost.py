@@ -8,10 +8,7 @@ from report import read_portfolio
 
 def portfolio_cost(filename):
     portfolio = read_portfolio(filename)
-    total_price = 0.0
-    for record in portfolio: 
-        total_price += record.cost 
-    return total_price
+    return portfolio.total_cost
 
 def main(argv):
     if len(argv) == 2:

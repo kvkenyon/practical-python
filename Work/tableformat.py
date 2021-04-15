@@ -16,7 +16,7 @@ class TextTableFormatter(TableFormatter):
 
     def row(self, rowdata):
         for d in rowdata:
-            print(f'{d: >10s}', end=' ')
+            print(f'{str(d): >10s}', end=' ')
         print()
 
 

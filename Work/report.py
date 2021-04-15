@@ -4,13 +4,15 @@
 # Exercise 2.4
 from fileparse import parse_csv
 from stock import Stock
+from portfolio import Portfolio
 import tableformat
 
 
 def read_portfolio(filename):
     with open(filename) as file:
         portdicts = parse_csv(file, select=['name', 'shares', 'price'], types=[str, int, float], has_headers=True) 
-    return [Stock(d['name'],d['shares'],d['price']) for d in portdicts]
+    portfolio = [Stock(d['name'],d['shares'],d['price']) for d in portdicts]
+    return Portfolio(portfolio)
 
 def read_prices(filename):
     with open(filename) as file:
