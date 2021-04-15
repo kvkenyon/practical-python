@@ -8,10 +8,10 @@ from portfolio import Portfolio
 import tableformat
 
 
-def read_portfolio(filename):
+def read_portfolio(filename, **opts):
     with open(filename) as file:
-        portdicts = parse_csv(file, select=['name', 'shares', 'price'], types=[str, int, float], has_headers=True) 
-    portfolio = [Stock(d['name'],d['shares'],d['price']) for d in portdicts]
+        portdicts = parse_csv(file, select=['name', 'shares', 'price'], types=[str, int, float], has_headers=True, **opts) 
+    portfolio = [Stock(**d) for d in portdicts]
     return Portfolio(portfolio)
 
 def read_prices(filename):
@@ -29,7 +29,6 @@ def make_report(portfolio, prices):
         change = current_price - buy_price 
         report.append((symbol, shares, current_price, change))
     return report
-
 
 def print_report(report, formatter):
     headers = ('Name', 'Shares', 'Price', 'Change')
